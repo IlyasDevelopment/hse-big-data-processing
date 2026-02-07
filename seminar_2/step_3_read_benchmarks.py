@@ -155,9 +155,6 @@ def get_read_formats():
         {"name": "Avro (deflate)",     "ext": ".deflate.avro",    "reader": read_avro,        "reader_cols": read_avro_cols,         "reader_filt": read_avro_filter,         "available": fastavro is not None},
         {"name": "ORC (snappy)",       "ext": ".snappy.orc",      "reader": read_orc,         "reader_cols": read_orc_cols,          "reader_filt": read_orc_filter,          "available": HAS_ORC},
         {"name": "ORC (zlib)",         "ext": ".zlib.orc",        "reader": read_orc,         "reader_cols": read_orc_cols,          "reader_filt": read_orc_filter,          "available": HAS_ORC},
-        {"name": "Feather (none)",     "ext": ".none.feather",    "reader": read_feather,     "reader_cols": read_feather_cols,      "reader_filt": read_feather_filter,      "available": True},
-        {"name": "Feather (lz4)",      "ext": ".lz4.feather",     "reader": read_feather,     "reader_cols": read_feather_cols,      "reader_filt": read_feather_filter,      "available": True},
-        {"name": "Feather (zstd)",     "ext": ".zstd.feather",    "reader": read_feather,     "reader_cols": read_feather_cols,      "reader_filt": read_feather_filter,      "available": True},
     ]
 
 

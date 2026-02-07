@@ -140,7 +140,7 @@ def generate_to_parquet(num_rows: int, parquet_path: str, seed: int = 42) -> int
 
 def main():
     parser = argparse.ArgumentParser(description="Step 1: Generate synthetic data")
-    parser.add_argument("--num-rows", type=int, default=30_000_000,
+    parser.add_argument("--num-rows", type=int, default=5_000_000,
                         help="Number of rows to generate (default: 30,000,000 → ~3 GB CSV)")
     parser.add_argument("--seed", type=int, default=42, help="Random seed (default: 42)")
     args = parser.parse_args()
