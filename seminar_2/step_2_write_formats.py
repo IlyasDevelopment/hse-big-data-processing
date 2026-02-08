@@ -113,18 +113,21 @@ def write_feather(df: pd.DataFrame, path: str, compression: str | None = None) -
 
 def get_write_formats():
     return [
-        {"name": "CSV",                "ext": ".csv",             "writer": write_csv,                                              "available": True},
-        {"name": "CSV + gzip",         "ext": ".csv.gz",          "writer": write_csv_gzip,                                         "available": True},
+        # {"name": "CSV",                "ext": ".csv",             "writer": write_csv,                                              "available": True},
+        # {"name": "CSV + gzip",         "ext": ".csv.gz",          "writer": write_csv_gzip,                                         "available": True},
         {"name": "JSON Lines",         "ext": ".jsonl",           "writer": write_jsonl,                                             "available": True},
-        {"name": "JSON Lines + gzip",  "ext": ".jsonl.gz",        "writer": write_jsonl_gzip,                                        "available": True},
-        {"name": "Parquet (snappy)",   "ext": ".snappy.parquet",  "writer": lambda df, p: write_parquet(df, p, compression="snappy"), "available": True},
-        {"name": "Parquet (gzip)",     "ext": ".gzip.parquet",    "writer": lambda df, p: write_parquet(df, p, compression="gzip"),   "available": True},
-        {"name": "Parquet (zstd)",     "ext": ".zstd.parquet",    "writer": lambda df, p: write_parquet(df, p, compression="zstd"),   "available": True},
-        {"name": "Parquet (none)",     "ext": ".none.parquet",    "writer": lambda df, p: write_parquet(df, p, compression="none"),   "available": True},
+        # {"name": "JSON Lines + gzip",  "ext": ".jsonl.gz",        "writer": write_jsonl_gzip,                                        "available": True},
+        # {"name": "Parquet (snappy)",   "ext": ".snappy.parquet",  "writer": lambda df, p: write_parquet(df, p, compression="snappy"), "available": True},
+        # {"name": "Parquet (gzip)",     "ext": ".gzip.parquet",    "writer": lambda df, p: write_parquet(df, p, compression="gzip"),   "available": True},
+        # {"name": "Parquet (zstd)",     "ext": ".zstd.parquet",    "writer": lambda df, p: write_parquet(df, p, compression="zstd"),   "available": True},
+        # {"name": "Parquet (none)",     "ext": ".none.parquet",    "writer": lambda df, p: write_parquet(df, p, compression="none"),   "available": True},
         {"name": "Avro (snappy)",      "ext": ".snappy.avro",     "writer": lambda df, p: write_avro(df, p, codec="snappy"),          "available": fastavro is not None},
-        {"name": "Avro (deflate)",     "ext": ".deflate.avro",    "writer": lambda df, p: write_avro(df, p, codec="deflate"),         "available": fastavro is not None},
+        # {"name": "Avro (deflate)",     "ext": ".deflate.avro",    "writer": lambda df, p: write_avro(df, p, codec="deflate"),         "available": fastavro is not None},
         {"name": "ORC (snappy)",       "ext": ".snappy.orc",      "writer": lambda df, p: write_orc(df, p, compression="SNAPPY"),     "available": HAS_ORC},
-        {"name": "ORC (zlib)",         "ext": ".zlib.orc",        "writer": lambda df, p: write_orc(df, p, compression="ZLIB"),       "available": HAS_ORC},
+        # {"name": "ORC (zlib)",         "ext": ".zlib.orc",        "writer": lambda df, p: write_orc(df, p, compression="ZLIB"),       "available": HAS_ORC},
+    #     {"name": "Feather (none)",     "ext": ".none.feather",    "writer": lambda df, p: write_feather(df, p, compression=None),     "available": True},
+    #     {"name": "Feather (lz4)",      "ext": ".lz4.feather",     "writer": lambda df, p: write_feather(df, p, compression="lz4"),    "available": True},
+    #     {"name": "Feather (zstd)",     "ext": ".zstd.feather",    "writer": lambda df, p: write_feather(df, p, compression="zstd"),   "available": True},
     ]
 
 
