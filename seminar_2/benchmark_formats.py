@@ -76,7 +76,7 @@ except ImportError:
 try:
     import pyarrow as pa
     import pyarrow.parquet as pq
-    import pyarrow.feather as feather
+    import pyarrow.feather as feather  # noqa: F401 (kept for potential future use)
 except ImportError:
     sys.exit(
         "ERROR: pyarrow is not installed.  Run:  pip install pyarrow"
@@ -425,15 +425,6 @@ def write_orc(parquet_path: str, path: str, compression: str = "SNAPPY") -> None
     del table
 
 
-def write_feather(parquet_path: str, path: str, compression: str | None = None) -> None:
-    """Write Parquet data to Feather (Arrow IPC) format."""
-    # Feather needs the full table, but pyarrow reads Parquet efficiently
-    # without pandas overhead.
-    table = pq.read_table(parquet_path)
-    feather.write_feather(table, path, compression=compression)
-    del table
-
-
 # ============================================================================
 #  SECTION 3 — Reader Functions
 # ============================================================================
@@ -575,23 +566,6 @@ def read_orc_filter(path: str) -> pd.DataFrame:
     return df[df["event_type"] == FILTER_EVENT_TYPE]
 
 
-# ---- Feather / Arrow IPC readers -------------------------------------------
-
-def read_feather(path: str) -> pd.DataFrame:
-    return feather.read_feather(path)
-
-
-def read_feather_cols(path: str) -> pd.DataFrame:
-    # Feather supports column projection.
-    return feather.read_feather(path, columns=SELECT_COLUMNS)
-
-
-def read_feather_filter(path: str) -> pd.DataFrame:
-    # No native predicate push-down; read then filter.
-    df = feather.read_feather(path)
-    return df[df["event_type"] == FILTER_EVENT_TYPE]
-
-
 # ============================================================================
 #  SECTION 4 — Benchmark Definitions
 # ============================================================================
@@ -722,34 +696,6 @@ def build_format_registry() -> list[dict[str, Any]]:
             "reader_cols": read_orc_cols,
             "reader_filt": read_orc_filter,
             "available": HAS_ORC,
-        },
-        # ---- Feather / Arrow IPC -------------------------------------------
-        {
-            "name": "Feather (none)",
-            "extension": ".none.feather",
-            "writer": lambda src, p: write_feather(src, p, compression=None),
-            "reader": read_feather,
-            "reader_cols": read_feather_cols,
-            "reader_filt": read_feather_filter,
-            "available": True,
-        },
-        {
-            "name": "Feather (lz4)",
-            "extension": ".lz4.feather",
-            "writer": lambda src, p: write_feather(src, p, compression="lz4"),
-            "reader": read_feather,
-            "reader_cols": read_feather_cols,
-            "reader_filt": read_feather_filter,
-            "available": True,
-        },
-        {
-            "name": "Feather (zstd)",
-            "extension": ".zstd.feather",
-            "writer": lambda src, p: write_feather(src, p, compression="zstd"),
-            "reader": read_feather,
-            "reader_cols": read_feather_cols,
-            "reader_filt": read_feather_filter,
-            "available": True,
         },
     ]
     return formats
@@ -1016,7 +962,7 @@ def cleanup_data_files(output_dir: str) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Benchmark big data file formats (CSV, JSON, Parquet, Avro, ORC, Feather).",
+        description="Benchmark big data file formats (CSV, JSON, Parquet, Avro, ORC).",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

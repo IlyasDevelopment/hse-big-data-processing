@@ -1,57 +1,57 @@
-# Seminar 2 — Compression & File Formats for Big Data / ETL
+# Семинар 2 — Сжатие и форматы файлов для больших данных / ETL
 
-## Seminar Structure (~80 min)
+## Структура семинара (~80 мин)
 
-| # | Part | Duration | Material |
-|---|------|----------|----------|
-| 1 | Parquet format deep-dive | ~30 min | `parquet_format_presentation.pptx` |
-| 2 | Theory: Avro, ORC, CSV, JSON, Arrow | ~20 min | `columnar_and_row_formats_theory.md` |
-| 3 | Hands-on benchmark | ~20-30 min | Python scripts (see below) |
+| # | Часть | Продолжительность | Материал |
+|---|-------|-------------------|----------|
+| 1 | Глубокий разбор формата Parquet | ~30 мин | `parquet_format_presentation.pptx` |
+| 2 | Теория: Avro, ORC, CSV, JSON, Arrow | ~20 мин | `columnar_and_row_formats_theory.md` |
+| 3 | Практический бенчмарк | ~20-30 мин | Python-скрипты (см. ниже) |
 
-## Files
+## Файлы
 
-### Presentation & Theory
+### Презентация и теория
 
-- **`parquet_format_presentation.pptx`** — Slides covering Parquet internals: row-groups, column chunks, pages, encoding (RLE_DICTIONARY, PLAIN), compression codecs, predicate pushdown, partitioning, Delta Lake.
-- **`columnar_and_row_formats_theory.md`** — Lecture notes on Avro, ORC, CSV, JSON, Arrow/Feather formats. Includes comparison tables, compression algorithm overview (Snappy, GZIP, LZ4, ZSTD), and format selection guidelines.
+- **`parquet_format_presentation.pptx`** — Слайды, охватывающие внутреннее устройство Parquet: группы строк, фрагменты столбцов, страницы, кодирование (RLE_DICTIONARY, PLAIN), кодеки сжатия, предикатный pushdown, партиционирование, Delta Lake.
+- **`columnar_and_row_formats_theory.md`** — Конспект лекции по форматам Avro, ORC, CSV, JSON, Arrow/Feather. Включает сравнительные таблицы, обзор алгоритмов сжатия (Snappy, GZIP, LZ4, ZSTD) и рекомендации по выбору формата.
 
-### Practical Benchmark — All-in-One
+### Практический бенчмарк — всё в одном файле
 
-- **`benchmark_formats.py`** — Single-file benchmark that generates ~3 GB of synthetic data (30M rows) and compares 15 format/compression variants (CSV, JSON Lines, Parquet, Avro, ORC, Feather). Measures write time, file size, full read, column selection, filtered read, and aggregation. Uses streaming writes to keep memory usage low.
+- **`benchmark_formats.py`** — Бенчмарк в одном файле, который генерирует ~3 ГБ синтетических данных (30 млн строк) и сравнивает 15 вариантов формат/сжатие (CSV, JSON Lines, Parquet, Avro, ORC, Feather). Измеряет время записи, размер файла, полное чтение, выбор столбцов, чтение с фильтрацией и агрегацию. Использует потоковую запись для экономии памяти.
   ```bash
   pip install -r requirements.txt
-  python benchmark_formats.py          # full run (~3 GB CSV, 15-30 min)
-  python benchmark_formats.py --quick  # smaller run (~500 MB, 5-7 min)
+  python benchmark_formats.py          # полный запуск (~3 ГБ CSV, 15-30 мин)
+  python benchmark_formats.py --quick  # сокращённый запуск (~500 МБ, 5-7 мин)
   ```
 
-### Practical Benchmark — Step-by-Step (for classroom walkthrough)
+### Практический бенчмарк — пошагово (для разбора в аудитории)
 
-Run these in order. Each step is independent and saves results for the next.
+Запускайте скрипты по порядку. Каждый шаг независим и сохраняет результаты для следующего.
 
-- **`common.py`** — Shared imports, constants, and helper functions used by all steps.
-- **`step_1_generate_data.py`** — Generates 30M synthetic event rows and streams them to a Parquet file. Never holds the full dataset in memory.
+- **`common.py`** — Общие импорты, константы и вспомогательные функции, используемые всеми шагами.
+- **`step_1_generate_data.py`** — Генерирует 30 млн синтетических строк событий и записывает их в Parquet-файл потоково. Никогда не держит весь набор данных в памяти.
   ```bash
-  python step_1_generate_data.py                     # 30M rows (default)
-  python step_1_generate_data.py --num-rows 5000000  # 5M rows (quick)
+  python step_1_generate_data.py                     # 30 млн строк (по умолчанию)
+  python step_1_generate_data.py --num-rows 5000000  # 5 млн строк (быстрый режим)
   ```
-- **`step_2_write_formats.py`** — Reads the generated Parquet data and writes it to all 15 format variants. Measures write time and file size.
+- **`step_2_write_formats.py`** — Считывает сгенерированные данные Parquet и записывает их во все 15 вариантов форматов. Измеряет время записи и размер файла.
   ```bash
   python step_2_write_formats.py
   ```
-- **`step_3_read_benchmarks.py`** — Reads each written file and benchmarks: full scan, column selection, filtered read, and groupby aggregation.
+- **`step_3_read_benchmarks.py`** — Считывает каждый записанный файл и измеряет: полное сканирование, выбор столбцов, чтение с фильтрацией и агрегацию с группировкой.
   ```bash
   python step_3_read_benchmarks.py
   ```
-- **`step_4_visualize_results.py`** — Merges write + read results, prints a combined table, generates comparison bar charts (PNG), and highlights key takeaways.
+- **`step_4_visualize_results.py`** — Объединяет результаты записи и чтения, выводит сводную таблицу, генерирует сравнительные столбчатые диаграммы (PNG) и выделяет ключевые выводы.
   ```bash
   python step_4_visualize_results.py
   ```
 
-### Other
+### Прочее
 
-- **`requirements.txt`** — Python dependencies.
+- **`requirements.txt`** — Зависимости Python.
 
-## Requirements
+## Требования
 
 ```
 Python 3.10+

@@ -16,7 +16,7 @@ Usage:
 
 from common import (
     np, pd, pa, pq, feather, json, os, time,
-    HAS_ORC, fastavro,
+    HAS_ORC,
     GENERATED_DATA_PATH, DATA_FILES_DIR, WRITE_RESULTS_PATH,
     ensure_output_dir, time_it, file_size_mb,
 )
@@ -103,10 +103,6 @@ def write_orc(df: pd.DataFrame, path: str, compression: str = "SNAPPY") -> None:
     orc.write_table(table, path, compression=compression)
 
 
-def write_feather(df: pd.DataFrame, path: str, compression: str | None = None) -> None:
-    feather.write_feather(df, path, compression=compression)
-
-
 # ============================================================================
 #  Format Registry (write-only)
 # ============================================================================
@@ -125,9 +121,6 @@ def get_write_formats():
         # {"name": "Avro (deflate)",     "ext": ".deflate.avro",    "writer": lambda df, p: write_avro(df, p, codec="deflate"),         "available": fastavro is not None},
         {"name": "ORC (snappy)",       "ext": ".snappy.orc",      "writer": lambda df, p: write_orc(df, p, compression="SNAPPY"),     "available": HAS_ORC},
         # {"name": "ORC (zlib)",         "ext": ".zlib.orc",        "writer": lambda df, p: write_orc(df, p, compression="ZLIB"),       "available": HAS_ORC},
-    #     {"name": "Feather (none)",     "ext": ".none.feather",    "writer": lambda df, p: write_feather(df, p, compression=None),     "available": True},
-    #     {"name": "Feather (lz4)",      "ext": ".lz4.feather",     "writer": lambda df, p: write_feather(df, p, compression="lz4"),    "available": True},
-    #     {"name": "Feather (zstd)",     "ext": ".zstd.feather",    "writer": lambda df, p: write_feather(df, p, compression="zstd"),   "available": True},
     ]
 
 

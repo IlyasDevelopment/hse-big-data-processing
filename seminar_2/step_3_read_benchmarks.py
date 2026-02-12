@@ -13,15 +13,15 @@ Reads data files written in Step 2 and benchmarks:
 Key observations to look for:
   - Columnar formats (Parquet, ORC, Feather) read fewer columns MUCH faster
   - Parquet predicate push-down skips row groups that don't match the filter
-  - Row-based formats (CSV, JSON, Avro) must read everything regardless
+  - Row-based formats (CSV, JSON) must read everything regardless
 
 Usage:
     python step_3_read_benchmarks.py
 """
 
 from common import (
-    np, pd, pa, pq, feather, os,
-    HAS_ORC, fastavro,
+    np, pd, pa, pq, os,
+    HAS_ORC,
     SELECT_COLUMNS, FILTER_EVENT_TYPE,
     DATA_FILES_DIR, READ_RESULTS_PATH, WRITE_RESULTS_PATH,
     ensure_output_dir, time_it,
@@ -81,22 +81,6 @@ def read_parquet_filter(path):
     return pq.read_table(path, filters=filters).to_pandas()
 
 
-# ---- Avro ------------------------------------------------------------------
-
-def read_avro(path):
-    if fastavro is None: raise RuntimeError("fastavro is not installed")
-    with open(path, "rb") as f:
-        records = list(fastavro.reader(f))
-    return pd.DataFrame(records)
-
-def read_avro_cols(path):
-    df = read_avro(path)
-    return df[SELECT_COLUMNS]
-def read_avro_filter(path):
-    df = read_avro(path)
-    return df[df["event_type"] == FILTER_EVENT_TYPE]
-
-
 # ---- ORC (columnar) -------------------------------------------------------
 
 def read_orc(path):
@@ -107,16 +91,6 @@ def read_orc_cols(path):
     return orc.read_table(path, columns=SELECT_COLUMNS).to_pandas()
 def read_orc_filter(path):
     df = orc.read_table(path).to_pandas()
-    return df[df["event_type"] == FILTER_EVENT_TYPE]
-
-
-# ---- Feather / Arrow IPC --------------------------------------------------
-
-def read_feather(path): return feather.read_feather(path)
-def read_feather_cols(path):
-    return feather.read_feather(path, columns=SELECT_COLUMNS)
-def read_feather_filter(path):
-    df = feather.read_feather(path)
     return df[df["event_type"] == FILTER_EVENT_TYPE]
 
 
@@ -151,8 +125,6 @@ def get_read_formats():
         {"name": "Parquet (gzip)",     "ext": ".gzip.parquet",    "reader": read_parquet,     "reader_cols": read_parquet_cols,      "reader_filt": read_parquet_filter,      "available": True},
         {"name": "Parquet (zstd)",     "ext": ".zstd.parquet",    "reader": read_parquet,     "reader_cols": read_parquet_cols,      "reader_filt": read_parquet_filter,      "available": True},
         {"name": "Parquet (none)",     "ext": ".none.parquet",    "reader": read_parquet,     "reader_cols": read_parquet_cols,      "reader_filt": read_parquet_filter,      "available": True},
-        {"name": "Avro (snappy)",      "ext": ".snappy.avro",     "reader": read_avro,        "reader_cols": read_avro_cols,         "reader_filt": read_avro_filter,         "available": fastavro is not None},
-        {"name": "Avro (deflate)",     "ext": ".deflate.avro",    "reader": read_avro,        "reader_cols": read_avro_cols,         "reader_filt": read_avro_filter,         "available": fastavro is not None},
         {"name": "ORC (snappy)",       "ext": ".snappy.orc",      "reader": read_orc,         "reader_cols": read_orc_cols,          "reader_filt": read_orc_filter,          "available": HAS_ORC},
         {"name": "ORC (zlib)",         "ext": ".zlib.orc",        "reader": read_orc,         "reader_cols": read_orc_cols,          "reader_filt": read_orc_filter,          "available": HAS_ORC},
     ]

@@ -40,12 +40,6 @@ except ImportError:
     print("WARNING: pyarrow.orc is not available. ORC benchmarks will be skipped.")
 
 try:
-    import fastavro
-except ImportError:
-    fastavro = None
-    print("WARNING: fastavro is not installed. Avro benchmarks will be skipped.")
-
-try:
     from tabulate import tabulate
 except ImportError:
     sys.exit("ERROR: tabulate is not installed.  Run:  pip install tabulate")
