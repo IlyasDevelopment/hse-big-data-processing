@@ -119,8 +119,8 @@ def get_read_formats():
     return [
         {"name": "CSV",                "ext": ".csv",             "reader": read_csv,         "reader_cols": read_csv_cols,         "reader_filt": read_csv_filter,         "available": True},
         {"name": "CSV + gzip",         "ext": ".csv.gz",          "reader": read_csv_gzip,    "reader_cols": read_csv_gzip_cols,    "reader_filt": read_csv_gzip_filter,    "available": True},
-        {"name": "JSON Lines",         "ext": ".jsonl",           "reader": read_jsonl,       "reader_cols": read_jsonl_cols,        "reader_filt": read_jsonl_filter,        "available": True},
-        {"name": "JSON Lines + gzip",  "ext": ".jsonl.gz",        "reader": read_jsonl_gzip,  "reader_cols": read_jsonl_gzip_cols,   "reader_filt": read_jsonl_gzip_filter,   "available": True},
+        # {"name": "JSON Lines",         "ext": ".jsonl",           "reader": read_jsonl,       "reader_cols": read_jsonl_cols,        "reader_filt": read_jsonl_filter,        "available": True},
+        # {"name": "JSON Lines + gzip",  "ext": ".jsonl.gz",        "reader": read_jsonl_gzip,  "reader_cols": read_jsonl_gzip_cols,   "reader_filt": read_jsonl_gzip_filter,   "available": True},
         {"name": "Parquet (snappy)",   "ext": ".snappy.parquet",  "reader": read_parquet,     "reader_cols": read_parquet_cols,      "reader_filt": read_parquet_filter,      "available": True},
         {"name": "Parquet (gzip)",     "ext": ".gzip.parquet",    "reader": read_parquet,     "reader_cols": read_parquet_cols,      "reader_filt": read_parquet_filter,      "available": True},
         {"name": "Parquet (zstd)",     "ext": ".zstd.parquet",    "reader": read_parquet,     "reader_cols": read_parquet_cols,      "reader_filt": read_parquet_filter,      "available": True},
