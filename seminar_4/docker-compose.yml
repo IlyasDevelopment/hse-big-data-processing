@@ -1,0 +1,30 @@
+services:
+  spark-master:
+    image: apache/spark:latest
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    command: >
+      /opt/spark/bin/spark-class
+      org.apache.spark.deploy.master.Master
+      --host spark-master
+    networks:
+      - spark-network
+
+  spark-worker:
+    image: apache/spark:latest
+    depends_on:
+      - spark-master
+    command: >
+      /opt/spark/bin/spark-class
+      org.apache.spark.deploy.worker.Worker
+      spark://spark-master:7077
+    volumes:  # an external storage should be used, this is for test only
+      - ./nyctaxi:/Users/gasanov/Desktop/pycharmProjects/uni_big_data/seminar_4/nyctaxi
+    networks:
+      - spark-network
+    cpus: 4
+
+networks:
+  spark-network:
+    driver: bridge
