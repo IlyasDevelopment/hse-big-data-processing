@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres-seminar5
+    environment:
+      POSTGRES_USER: student
+      POSTGRES_PASSWORD: bigdata2024
+      POSTGRES_DB: seminar5
+    ports:
+      - "5433:5432"  # Используем порт 5433 вместо 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U student"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - seminar5_network
+
+  # MinIO (S3-совместимое хранилище) - опционально для скрипта 10
+  minio:
+    image: minio/minio:latest
+    container_name: minio-seminar5
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"   # API
+      - "9001:9001"   # Console
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - seminar5_network
+
+  # pgAdmin - опционально для визуального управления PostgreSQL
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin-seminar5
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - seminar5_network
+
+volumes:
+  postgres_data:
+    driver: local
+  minio_data:
+    driver: local
+
+networks:
+  seminar5_network:
+    driver: bridge

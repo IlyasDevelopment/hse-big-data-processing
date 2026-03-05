@@ -1,0 +1,4 @@
+onetl>=0.10.0
+pyspark>=3.4.0
+psycopg2-binary>=2.9.0
+pandas>=2.0.0
