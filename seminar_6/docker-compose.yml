@@ -1,0 +1,79 @@
+services:
+
+  horizon-db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      TZ: UTC
+      POSTGRES_DB: horizon
+      POSTGRES_USER: horizon
+      POSTGRES_PASSWORD: secret
+    ports:
+      - 5434:5432
+    volumes:
+      - horizon_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}']
+      start_period: 5s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  horizon:
+    image: mtsrus/horizon-backend:develop
+    restart: unless-stopped
+    environment:
+      HORIZON__ENTRYPOINT__ADMIN_USERS: admin
+      HORIZON__DATABASE__URL: postgresql+asyncpg://horizon:secret@horizon-db:5432/horizon
+      HORIZON__AUTH__ACCESS_TOKEN__SECRET_KEY: generate_another_random_string
+      HORIZON__AUTH__PROVIDER: horizon.backend.providers.auth.dummy.DummyAuthProvider
+      HORIZON__SERVER__LOGGING__PRESET: colored
+      PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus-metrics
+    tmpfs:
+      - /tmp/prometheus-metrics:mode=1777
+    ports:
+      - 8020:8000
+    depends_on:
+      horizon-db:
+        condition: service_healthy
+
+  test-postgres:
+    image: postgres:17
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      TZ: UTC
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}']
+      start_period: 5s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  test-s3:
+    image: minio/minio:latest
+    container_name: test-s3
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      TZ: UTC
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: miniosecret
+    ports:
+      - "9010:9000"
+      - "9011:9001"
+    volumes:
+      - ./minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      start_period: 5s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  horizon_test_data:
